@@ -9,26 +9,59 @@ public class Main {
     public static void main(String[] args) throws IOException{
         int rows;
         int columns;
-        
+                
         //read in medium maze
         rows = 23;
         columns = 61;
-        char[][] maze = new char[rows][columns];
+        char[][] mediumMaze = new char[rows][columns];
         FileInputStream input1 = new FileInputStream("medium_maze.txt");
-        BufferedReader reader1 = new BufferedReader(new InputStreamReader(input1));
+        InputStreamReader stream1 = new InputStreamReader(input1);
+        BufferedReader reader1 = new BufferedReader(stream1);
         for(int j = 0; j < rows; j++){
-            maze[j] = reader1.readLine().replaceAll(" ", ".").toCharArray();
+            mediumMaze[j] = reader1.readLine().replaceAll(" ", ".").toCharArray();
         }
-        //System.out.println("maze[0][+" + columns + "+] = " + maze[0][columns-1]);
-        printMaze(maze);
+        input1.close();
+        stream1.close();
+        reader1.close();
+        //printMaze(mediumMaze);
+        
+        //read in medium maze
+        rows = 31;
+        columns = 82;
+        char[][] largeMaze = new char[rows][columns];
+        FileInputStream input2 = new FileInputStream("large_maze.txt");
+        InputStreamReader stream2 = new InputStreamReader(input2);
+        BufferedReader reader2 = new BufferedReader(stream2);
+        for(int j = 0; j < rows; j++){
+            largeMaze[j] = reader2.readLine().replaceAll(" ", ".").toCharArray();
+        }
+        input2.close();
+        stream2.close();
+        reader2.close();
+        //printMaze(largeMaze);
+        
+        //read in open maze
+        rows = 20;
+        columns = 37;
+        char[][] openMaze = new char[rows][columns];
+        FileInputStream input3 = new FileInputStream("open_maze.txt");
+        InputStreamReader stream3 = new InputStreamReader(input3);
+        BufferedReader reader3 = new BufferedReader(stream3);
+        for(int j = 0; j < rows; j++){
+            openMaze[j] = reader3.readLine().replaceAll(" ", ".").toCharArray();
+        }
+        input3.close();
+        stream3.close();
+        reader3.close();
+        //printMaze(openMaze);
     }
     
-    public static void printMaze(char [][] array){
-        for(int i = 0; i < array.length; i++){
+    public static void printMaze(char[][] maze){
+        for(int i = 0; i < maze.length; i++){
             //make a string for the row
             String row = "";
-            for(int j = 0; j < array[0].length; j++){
-                char c=array[i][j];    
+            for(int j = 0; j < maze[0].length; j++){
+                char c=maze[i][j];    
                 row+=Character.toString(c);  
             }
             //print out row
