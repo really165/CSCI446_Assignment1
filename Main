@@ -1,0 +1,38 @@
+package assignment1;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class Main {
+    public static void main(String[] args) throws IOException{
+        int rows;
+        int columns;
+        
+        //read in medium maze
+        rows = 23;
+        columns = 61;
+        char[][] maze = new char[rows][columns];
+        FileInputStream input1 = new FileInputStream("medium_maze.txt");
+        BufferedReader reader1 = new BufferedReader(new InputStreamReader(input1));
+        for(int j = 0; j < rows; j++){
+            maze[j] = reader1.readLine().replaceAll(" ", ".").toCharArray();
+        }
+        //System.out.println("maze[0][+" + columns + "+] = " + maze[0][columns-1]);
+        printMaze(maze, rows, columns);
+    }
+    
+    public static void printMaze(char [][] array, int rows, int columns){
+        for(int i = 0; i < rows; i++){
+            //make a string for the row
+            String row = "";
+            for(int j = 0; j < columns; j++){
+                char c=array[i][j];    
+                row+=Character.toString(c);  
+            }
+            //print out row
+            System.out.println(row);
+        }
+    }
+}
