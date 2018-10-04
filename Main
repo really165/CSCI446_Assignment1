@@ -48,12 +48,18 @@ public class Main {
         InputStreamReader stream3 = new InputStreamReader(input3);
         BufferedReader reader3 = new BufferedReader(stream3);
         for(int j = 0; j < rows; j++){
-            openMaze[j] = reader3.readLine().replaceAll(" ", ".").toCharArray();
+            openMaze[j] = reader3.readLine().replaceAll(" ", "-").toCharArray();
         }
         input3.close();
         stream3.close();
         reader3.close();
-        //printMaze(openMaze);
+        printMaze(openMaze);
+        
+        //perform depth first search
+        //make a DFS object with a given maze
+        DFS depthFirstSearch = new DFS(mediumMaze);
+        //call the maze traverse method
+        depthFirstSearch.traverseMaze();
     }
     
     public static void printMaze(char[][] maze){
