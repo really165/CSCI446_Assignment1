@@ -12,8 +12,8 @@ public class DFS {
     int cost = 0;
     int nodes = 0;
     char dash = "-".charAt(0);
-    Stack stack = new Stack<>();
-    Stack output = new Stack<>();
+    Stack<Node> stack = new Stack<>();
+    Stack<Node> output = new Stack<>();
     
     public DFS(char[][] input){
         maze = input;
