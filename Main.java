@@ -2,76 +2,61 @@ package assignment1;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 
+import java.io.IOException;
+import java.io.FileNotFoundException;
+
+import java.util.ArrayList;
+
 public class Main {
-    public static void main(String[] args) throws IOException{
-        int rows;
-        int columns;
-                
-        //read in medium maze
-        rows = 23;
-        columns = 61;
-        char[][] mediumMaze = new char[rows][columns];
-        FileInputStream input1 = new FileInputStream("medium_maze.txt");
-        InputStreamReader stream1 = new InputStreamReader(input1);
-        BufferedReader reader1 = new BufferedReader(stream1);
-        for(int j = 0; j < rows; j++){
-            mediumMaze[j] = reader1.readLine().replaceAll(" ", "-").toCharArray();
-        }
-        input1.close();
-        stream1.close();
-        reader1.close();
-        printMaze(mediumMaze);
-        
-        //read in medium maze
-        rows = 31;
-        columns = 82;
-        char[][] largeMaze = new char[rows][columns];
-        FileInputStream input2 = new FileInputStream("large_maze.txt");
-        InputStreamReader stream2 = new InputStreamReader(input2);
-        BufferedReader reader2 = new BufferedReader(stream2);
-        for(int j = 0; j < rows; j++){
-            largeMaze[j] = reader2.readLine().replaceAll(" ", "-").toCharArray();
-        }
-        input2.close();
-        stream2.close();
-        reader2.close();
-        //printMaze(largeMaze);
-        
-        //read in open maze
-        rows = 20;
-        columns = 37;
-        char[][] openMaze = new char[rows][columns];
-        FileInputStream input3 = new FileInputStream("open_maze.txt");
-        InputStreamReader stream3 = new InputStreamReader(input3);
-        BufferedReader reader3 = new BufferedReader(stream3);
-        for(int j = 0; j < rows; j++){
-            openMaze[j] = reader3.readLine().replaceAll(" ", "-").toCharArray();
-        }
-        input3.close();
-        stream3.close();
-        reader3.close();
-        //printMaze(openMaze);
-        
-        //perform depth first search
-        //make a DFS object with a given maze
-        DFS depthFirstSearch = new DFS(mediumMaze);
-        //call the maze traverse method
-        depthFirstSearch.traverseMaze();
-    }
-    
-    public static void printMaze(char[][] maze){
-        for(int i = 0; i < maze.length; i++){
-            //make a string for the row
-            String row = "";
-            for(int j = 0; j < maze[0].length; j++){
-                char c=maze[i][j];    
-                row+=Character.toString(c);  
+    public static void main(String[] args) {
+        if (args.length == 1) {
+            try {
+                DFS depthFirstSearch = new DFS(readFile(args[0]));
+                depthFirstSearch.traverseMaze();
             }
-            //print out row
-            System.out.println(row);
+            catch (FileNotFoundException e) {
+                System.err.println("File not found");
+            }
         }
+        else {
+            System.err.println("Usage: java assignment1.Main MAZE_FILE");
+        }
+    }
+
+    private static char[][] readFile(String path) throws FileNotFoundException {
+        ArrayList<char[]> maze = new ArrayList<>();
+        char[][] finalizedMaze = null;
+
+        try {
+            FileInputStream input = new FileInputStream(path);
+            InputStreamReader stream = new InputStreamReader(input);
+            BufferedReader reader = new BufferedReader(stream);
+
+            while (reader.ready()) {
+                String line = reader.readLine();
+                maze.add(line.replaceAll(" ", "-").toCharArray());
+            }
+
+            reader.close();
+            stream.close();
+            input.close();
+
+            finalizedMaze = maze.toArray(new char[0][0]);
+            for(char[] row : finalizedMaze) {
+                if (row == null) {
+                    System.out.println("NULL!");
+                }
+                else {
+                    System.out.println(row);
+                }
+            }
+        }
+        catch (IOException e) {
+            System.err.println("Fuck.");
+        }
+
+        return finalizedMaze;
     }
 }
