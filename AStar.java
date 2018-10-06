@@ -6,30 +6,21 @@ public class AStar {
     static Tile start = null;
     static Tile end = null;
 
-    static final char WALL     = '█';
-    static final char FRONTER  = '▒';
-    static final char SEARCHED = '░';
-    static final char SPACE    = ' ';
-
     public static char[][] search(char[][] _maze) {
         char[][] maze = deepCopy(_maze);
 
         /* Step 0: reformat the maze for my entertainment */
         for (int r = 0; r < maze.length; ++r) {
             for (int c = 0; c < maze[r].length; ++c) {
-                char symbol = maze[r][c];
-
-                switch (symbol) {
+                switch (maze[r][c]) {
                     case '%':
-                        symbol = WALL;
+                        maze[r][c] = Tile.WALL;
                         break;
 
                     case '-':
-                        symbol = SPACE;
+                        maze[r][c] = Tile.SPACE;
                         break;
                 }
-
-                maze[r][c] = symbol;
             }
         }
 
@@ -40,11 +31,11 @@ public class AStar {
             for (int c = 0; c < maze[r].length; ++c) {
                 char cell = maze[r][c];
 
-                if (cell == 'P') {
+                if (cell == Tile.START) {
                     assert start == null;
                     start = new Tile(r,c);
                 }
-                else if (cell == '*') {
+                else if (cell == Tile.END) {
                     assert end == null;
                     end = new Tile(r,c);
                 }
@@ -60,8 +51,10 @@ public class AStar {
         while (queue.peek() != null) {
             Tile tile = queue.poll();
 
-            if (maze[tile.r][tile.c] != SEARCHED) {
-                maze[tile.r][tile.c] = SEARCHED;
+            if (maze[tile.r][tile.c] != Tile.SEARCHED) {
+                if (maze[tile.r][tile.c] != Tile.START) {
+                    maze[tile.r][tile.c] = Tile.SEARCHED;
+                }
 
                 if (tile.r == end.r && tile.c == end.c) {
                     System.out.println("We gucci.");
@@ -77,9 +70,18 @@ public class AStar {
                     };
 
                     for (Tile candidate : directionsToCheck) {
-                        if (maze[candidate.r][candidate.c] != WALL && maze[candidate.r][candidate.c] != SEARCHED) {
-                            maze[candidate.r][candidate.c] = FRONTER; /* mark as being on the fronter */
-                            queue.offer(candidate);
+                        switch (maze[candidate.r][candidate.c]) {
+                            case Tile.WALL:
+                            case Tile.SEARCHED:
+                            case Tile.START:
+                                /* Don't spread into these tiles */
+                                break;
+
+                            default:
+                                /* Do spread into these */
+                                maze[candidate.r][candidate.c] = Tile.FRONTER;
+                                queue.offer(candidate);
+                                break;
                         }
                     }
 
@@ -97,8 +99,8 @@ public class AStar {
 
         /* Step 3: profit */
         for (Tile path = end; path != null; path = path.prev) {
-            if (result[path.r][path.c] == SPACE) {
-                result[path.r][path.c] = '⋅';
+            if (result[path.r][path.c] == Tile.SPACE) {
+                result[path.r][path.c] = Tile.PATH;
             }
         }
 
@@ -122,13 +124,21 @@ public class AStar {
         public final int r;
         public final int c;
         public final Tile prev;
-        public final int step;
+        public final int cost;
+
+        static final char WALL     = '█';
+        static final char FRONTER  = '▒';
+        static final char SEARCHED = '░';
+        static final char SPACE    = ' ';
+        static final char START    = 'P';
+        static final char END      = '*';
+        static final char PATH     = '⋅';
 
         public Tile(int r, int c) {
             this.r = r;
             this.c = c;
             this.prev = null;
-            this.step = 0;
+            this.cost = 0;
         }
 
         public Tile(int r, int c, Tile prev) {
@@ -137,20 +147,21 @@ public class AStar {
             this.r = r;
             this.c = c;
             this.prev = prev;
-            this.step = prev.step + 1;
+            this.cost = prev.cost + 1;
+        }
+
+        public int dist() {
+            return Math.abs(this.r - end.r) + Math.abs(this.c - end.c);
         }
 
         public int compareTo(Tile that) {
-            int thisdist = Math.abs(this.r - end.r) + Math.abs(this.c - end.c);
-            int thatdist = Math.abs(that.r - end.r) + Math.abs(that.c - end.c);
-
-            return Integer.compare(thisdist + this.step, thatdist + that.step);
+            return Integer.compare(this.dist() + this.cost, that.dist() + that.cost);
         }
 
         public void print() {
-            System.out.printf("[%d][%d] (%d) -> ", this.r, this.c, this.step);
+            System.out.printf("[%d][%d] (%d) -> ", this.r, this.c, this.cost);
             if (this.prev != null) {
-                System.out.printf("[%d][%d] (%d)\n", this.prev.r, this.prev.c, this.prev.step);
+                System.out.printf("[%d][%d] (%d)\n", this.prev.r, this.prev.c, this.prev.cost);
             }
             else {
                 System.out.printf(" null\n");
