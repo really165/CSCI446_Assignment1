@@ -23,10 +23,14 @@ public class Main {
                 //DFS depthFirstSearch = new DFS(maze);
                 //depthFirstSearch.traverseMaze();
 
-                char[][] result = AStar.search(maze);
+                AStar searcher = new AStar();
+                char[][] result = searcher.search(maze);
 
                 System.out.println("Resulting path:");
                 printMaze(result);
+
+                System.out.printf("path cost: %d\n", searcher.pathCost);
+                System.out.printf("nodes expanded : %d\n", searcher.expanded);
             }
             catch (FileNotFoundException e) {
                 System.err.println("File not found");

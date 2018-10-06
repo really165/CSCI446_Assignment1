@@ -3,11 +3,18 @@ package assignment1;
 import java.util.*;
 
 public class AStar {
-    static Tile start = null;
-    static Tile end = null;
+    Tile start = null;
+    Tile end = null;
 
-    public static char[][] search(char[][] _maze) {
+    public int expanded;
+    public int pathCost;
+
+    public char[][] search(char[][] _maze) {
         char[][] maze = deepCopy(_maze);
+
+        expanded = 0;
+        /* start pathCost at -1 so to not include the starting point */
+        pathCost = -1;
 
         /* Step 0: reformat the maze for my entertainment */
         for (int r = 0; r < maze.length; ++r) {
@@ -49,6 +56,7 @@ public class AStar {
         queue.offer(start);
 
         while (queue.peek() != null) {
+            ++expanded;
             Tile tile = queue.poll();
 
             if (maze[tile.r][tile.c] != Tile.SEARCHED) {
@@ -83,14 +91,6 @@ public class AStar {
                                 break;
                         }
                     }
-
-                    try {
-                        System.in.read();
-                    }
-                    catch (Exception e) {
-                    }
-
-                    Main.printMaze(maze);
                 }
             }
         }
@@ -98,6 +98,7 @@ public class AStar {
 
         /* Step 3: profit */
         for (Tile path = end; path != null; path = path.prev) {
+            ++pathCost;
             if (result[path.r][path.c] == Tile.SPACE) {
                 result[path.r][path.c] = Tile.PATH;
             }
@@ -106,7 +107,7 @@ public class AStar {
         return result;
     }
 
-    public static char[][] deepCopy(char[][] original) {
+    public char[][] deepCopy(char[][] original) {
         if (original == null) {
             return null;
         }
@@ -119,7 +120,7 @@ public class AStar {
         return result;
     }
 
-    private static class Tile implements Comparable<Tile> {
+    private class Tile implements Comparable<Tile> {
         public final int r;
         public final int c;
         public final Tile prev;
