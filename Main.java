@@ -46,7 +46,7 @@ public class Main {
         try {
             while (reader.ready()) {
                 String line = reader.readLine();
-                maze.add(line.replaceAll("%", "█").toCharArray());
+                maze.add(line.toCharArray());
             }
 
             finalizedMaze = maze.toArray(new char[0][0]);
@@ -58,7 +58,7 @@ public class Main {
         return finalizedMaze;
     }
 
-    private static void printMaze(char[][] maze) {
+    public static void printMaze(char[][] maze) {
         for(char[] row : maze) {
             assert row != null;
 
