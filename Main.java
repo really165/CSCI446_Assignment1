@@ -1,11 +1,6 @@
 package assignment1;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-
-import java.io.IOException;
-import java.io.FileNotFoundException;
+import java.io.*;
 
 import java.util.ArrayList;
 
@@ -13,8 +8,25 @@ public class Main {
     public static void main(String[] args) {
         if (args.length == 1) {
             try {
-                DFS depthFirstSearch = new DFS(readFile(args[0]));
-                depthFirstSearch.traverseMaze();
+                InputStream input;
+
+                if (args[0].equals("-")) {
+                    input = System.in;
+                }
+                else {
+                    input = new FileInputStream(args[0]);
+                }
+
+                char[][] maze = readFile(input);
+                printMaze(maze);
+
+                //DFS depthFirstSearch = new DFS(maze);
+                //depthFirstSearch.traverseMaze();
+
+                char[][] result = AStar.search(maze);
+
+                System.out.println("Resulting path:");
+                printMaze(result);
             }
             catch (FileNotFoundException e) {
                 System.err.println("File not found");
@@ -25,38 +37,32 @@ public class Main {
         }
     }
 
-    private static char[][] readFile(String path) throws FileNotFoundException {
+    private static char[][] readFile(InputStream stream) throws FileNotFoundException {
         ArrayList<char[]> maze = new ArrayList<>();
         char[][] finalizedMaze = null;
 
-        try {
-            FileInputStream input = new FileInputStream(path);
-            InputStreamReader stream = new InputStreamReader(input);
-            BufferedReader reader = new BufferedReader(stream);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 
+        try {
             while (reader.ready()) {
                 String line = reader.readLine();
-                maze.add(line.replaceAll(" ", "-").toCharArray());
+                maze.add(line.replaceAll("%", "█").toCharArray());
             }
-
-            reader.close();
-            stream.close();
-            input.close();
 
             finalizedMaze = maze.toArray(new char[0][0]);
-            for(char[] row : finalizedMaze) {
-                if (row == null) {
-                    System.out.println("NULL!");
-                }
-                else {
-                    System.out.println(row);
-                }
-            }
         }
         catch (IOException e) {
             System.err.println("Fuck.");
         }
 
         return finalizedMaze;
+    }
+
+    private static void printMaze(char[][] maze) {
+        for(char[] row : maze) {
+            assert row != null;
+
+            System.out.println(row);
+        }
     }
 }
