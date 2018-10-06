@@ -46,7 +46,7 @@ public class Main {
         try {
             while (reader.ready()) {
                 String line = reader.readLine();
-                maze.add(line.toCharArray());
+                maze.add(line.replaceAll(" ", "-").toCharArray());
             }
 
             finalizedMaze = maze.toArray(new char[0][0]);

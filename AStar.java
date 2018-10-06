@@ -12,14 +12,24 @@ public class AStar {
     static final char SPACE    = ' ';
 
     public static char[][] search(char[][] _maze) {
-        char[][] maze   = deepCopy(_maze);
+        char[][] maze = deepCopy(_maze);
 
         /* Step 0: reformat the maze for my entertainment */
         for (int r = 0; r < maze.length; ++r) {
             for (int c = 0; c < maze[r].length; ++c) {
-                if (maze[r][c] == '%') {
-                    maze[r][c] = WALL;
+                char symbol = maze[r][c];
+
+                switch (symbol) {
+                    case '%':
+                        symbol = WALL;
+                        break;
+
+                    case '-':
+                        symbol = SPACE;
+                        break;
                 }
+
+                maze[r][c] = symbol;
             }
         }
 
