@@ -57,7 +57,6 @@ public class AStar {
                 }
 
                 if (tile.r == end.r && tile.c == end.c) {
-                    System.out.println("We gucci.");
                     end = tile;
                     break;
                 }
