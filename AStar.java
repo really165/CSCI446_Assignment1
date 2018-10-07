@@ -10,121 +10,110 @@ public class AStar {
     public int pathCost;
 
     public char[][] search(char[][] _maze) {
-        char[][] maze = deepCopy(_maze);
+        /* Step 0: initialize everything */
+
+        Tile[][] maze = new Tile[_maze.length][];
+        char[][] result = deepCopy(_maze);
 
         expanded = 0;
-        /* start pathCost at -1 so to not include the starting point */
-        pathCost = -1;
 
-        /* Step 0: reformat the maze for my entertainment */
-        for (int r = 0; r < maze.length; ++r) {
-            for (int c = 0; c < maze[r].length; ++c) {
-                switch (maze[r][c]) {
+        for (int r = 0; r < result.length; ++r) {
+            maze[r] = new Tile[result[r].length];
+
+            for (int c = 0; c < result[r].length; ++c) {
+                /* change the maze characters to make them easier to see */
+                switch (result[r][c]) {
                     case '%':
-                        maze[r][c] = Tile.WALL;
+                        result[r][c] = Tile.WALL;
                         break;
 
                     case '-':
-                        maze[r][c] = Tile.SPACE;
+                        result[r][c] = Tile.SPACE;
                         break;
                 }
+
+                maze[r][c] = new Tile(r, c, result[r][c]);
             }
         }
 
-        char[][] result = deepCopy(maze);
+
 
         /* Step 1: find our start point and our end point */
+
         for (int r = 0; r < maze.length; ++r) {
             for (int c = 0; c < maze[r].length; ++c) {
-                char cell = maze[r][c];
+                char symbol = maze[r][c].symbol;
 
-                if (cell == Tile.START) {
+                if (symbol == Tile.START) {
                     assert start == null;
-                    start = new Tile(r,c);
+                    start = maze[r][c];
                 }
-                else if (cell == Tile.END) {
+                else if (symbol == Tile.END) {
                     assert end == null;
-                    end = new Tile(r,c);
+                    end = maze[r][c];
                 }
             }
         }
 
         assert start != null && end != null;
 
+
+
         /* Step 2: run the algorithm */
-        Comparator<Tile> ordering = new Comparator<Tile>() {
+
+        PriorityQueue<Tile> queue = new PriorityQueue<>(new Comparator<Tile>() {
             public int compare(Tile a, Tile b) {
                 return Integer.compare(a.dist(end) + a.cost, b.dist(end) + b.cost);
             }
-        };
-
-        //PriorityQueue<Tile> queue = new PriorityQueue<>(ordering);
-        LinkedList<Tile> queue = new LinkedList<>();
+        });
+        start.cost = 0;
         queue.offer(start);
-        queue.add(start);
 
         while (!queue.isEmpty()) {
-            ++expanded;
             Tile tile = queue.poll();
 
-            if (maze[tile.r][tile.c] != Tile.SEARCHED) {
-                if (maze[tile.r][tile.c] != Tile.START) {
-                    maze[tile.r][tile.c] = Tile.SEARCHED;
-                }
+            if (tile.symbol != Tile.SEARCHED) {
+                ++expanded;
 
-                if (tile.r == end.r && tile.c == end.c) {
-                    end = tile;
+                if (tile == end) {
                     break;
                 }
-                else {
-                    Tile[] directionsToCheck = {
-                        new Tile(tile.r-1, tile.c, tile),
-                        new Tile(tile.r+1, tile.c, tile),
-                        new Tile(tile.r, tile.c-1, tile),
-                        new Tile(tile.r, tile.c+1, tile),
-                    };
 
-                    for (Tile candidate : directionsToCheck) {
-                        switch (maze[candidate.r][candidate.c]) {
-                            case Tile.WALL:
-                            case Tile.SEARCHED:
-                            case Tile.START:
-                                /* Don't spread into these tiles */
-                                break;
+                if (tile != start) {
+                    tile.symbol = Tile.SEARCHED;
+                }
 
-                            default:
-                                /* Do spread into these */
-                                maze[candidate.r][candidate.c] = Tile.FRONTER;
+                Tile[] candidateTiles = {
+                    maze[tile.r-1][tile.c],
+                    maze[tile.r+1][tile.c],
+                    maze[tile.r][tile.c-1],
+                    maze[tile.r][tile.c+1],
+                };
 
-                                Tile oldCandidate = candidate;
-                                for (Tile other : queue) {
-                                    if (candidate.r == other.r && candidate.c == other.c) {
-                                        if (candidate.compareTo(other) > 0) {
-                                            candidate = other;
-                                        }
-                                    }
-                                }
+                for (Tile candidate : candidateTiles) {
+                    switch (candidate.symbol) {
+                        case Tile.WALL:
+                        case Tile.SEARCHED:
+                        case Tile.START:
+                            /* Don't spread into these tiles */
+                            break;
 
-                                while (queue.remove(candidate));
+                        default:
+                            /* Do spread into other things */
+                            candidate.symbol = Tile.FRONTER;
 
-                                assert !queue.contains(candidate);
+                            int newCost = tile.cost + 1;
+                            if (newCost < candidate.cost) {
+                                candidate.cost = newCost;
+                                candidate.prev = tile;
+                            }
 
-                                queue.offer(candidate);
-                                queue.sort(ordering);
-                                break;
-                        }
+                            queue.offer(candidate);
+                            break;
                     }
-                }
-
-                try {
-                    while (System.in.read() != (int)'\n');
-                    Main.printMaze(maze);
-                }
-                catch (Exception e) {
                 }
             }
         }
-        /* NOTE: what happens if we find don't break from this loop? */
 
         /* Step 3: profit */
         pathCost = end.cost;
@@ -153,8 +142,9 @@ public class AStar {
     private static class Tile implements Comparable<Tile> {
         public final int r;
         public final int c;
-        public final Tile prev;
-        public final int cost;
+        public char symbol;
+        public Tile prev;
+        public int cost;
 
         static final char WALL     = '█';
         static final char FRONTER  = '▒';
@@ -164,20 +154,12 @@ public class AStar {
         static final char END      = '*';
         static final char PATH     = '⋅';
 
-        public Tile(int r, int c) {
+        public Tile(int r, int c, char symbol) {
             this.r = r;
             this.c = c;
+            this.symbol = symbol;
             this.prev = null;
-            this.cost = 0;
-        }
-
-        public Tile(int r, int c, Tile prev) {
-            assert prev != null;
-
-            this.r = r;
-            this.c = c;
-            this.prev = prev;
-            this.cost = prev.cost + 1;
+            this.cost = Integer.MAX_VALUE;
         }
 
         public int dist(Tile that) {
@@ -190,6 +172,16 @@ public class AStar {
             }
             else {
                 return Integer.compare(this.c, that.c);
+            }
+        }
+
+        public void print() {
+            System.out.printf("[%d][%d] (%d) -> ", this.r, this.c, this.cost);
+            if (this.prev != null) {
+                System.out.printf("[%d][%d] (%d)\n", this.prev.r, this.prev.c, this.prev.cost);
+            }
+            else {
+                System.out.printf(" null\n");
             }
         }
 
@@ -211,16 +203,6 @@ public class AStar {
 
             return result;
 
-        }
-
-        public void print() {
-            System.out.printf("[%d][%d] (%d) -> ", this.r, this.c, this.cost);
-            if (this.prev != null) {
-                System.out.printf("[%d][%d] (%d)\n", this.prev.r, this.prev.c, this.prev.cost);
-            }
-            else {
-                System.out.printf(" null\n");
-            }
         }
     }
 }
