@@ -121,17 +121,19 @@ public class BFS {
                     }
                 }
 
-                try {
-                    System.in.read();
-                    for (Tile[] row : maze) {
-                        for (Tile cell : row) {
-                            System.out.print(cell.symbol);
-                        }
-                        System.out.println();
-                    }
-                }
-                catch (Exception e) {
-                }
+                /* un-comment this to print each step of the algorithm */
+                //try {
+                //    java.util.concurrent.TimeUnit.MILLISECONDS.sleep(100);
+                //    for (Tile[] row : maze) {
+                //        for (Tile cell : row) {
+                //            System.out.print(cell.symbol);
+                //        }
+                //        System.out.println();
+                //    }
+                //    System.out.println();
+                //}
+                //catch (Exception e) {
+                //}
             }
         }
 
