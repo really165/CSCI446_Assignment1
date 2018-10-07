@@ -20,7 +20,8 @@ public class Main {
                 char[][] maze = readFile(input);
                 printMaze(maze);
 
-                AStar searcher = new AStar(maze);
+                //AStar searcher = new AStar(maze);
+                BFS searcher = new BFS(maze);
                 searcher.traverseMaze();
 
                 System.out.println("Resulting path:");
