@@ -11,14 +11,13 @@ public class DFS {
     int posY;
     int cost = 0;
     int nodes = 0;
+    char space = " ".charAt(0);
     char dash = "-".charAt(0);
     char period = ".".charAt(0);
     char finish = "*".charAt(0);
     Node currentPosition;
     Stack<Integer> stackX = new Stack<>();
     Stack<Integer> stackY = new Stack<>();
-    Stack<Integer> outputX = new Stack<>();
-    Stack<Integer> outputY = new Stack<>();
     
     public DFS(char[][] input){
         maze = input;
@@ -42,13 +41,13 @@ public class DFS {
         stackY.push(currentPosition.y);
         //visit starting position
         visit(currentPosition);
-        printMaze(maze);
     }
     
     public void traverseMaze(){
         while(!solved()){
             move();
         }
+        printSolution(maze);
     }
     
     public void move(){
@@ -76,13 +75,6 @@ public class DFS {
                 move();
             }
         }
-        printMaze(maze);
-    }
-    
-    public void backtrack(){
-        if(maze[posX-1][posY]==period){
-            
-        }
     }
     
     public boolean moveIsAvailable(){
@@ -106,22 +98,18 @@ public class DFS {
     public boolean solved(){
         //check up
         if(maze[posX-1][posY]==finish){
-            System.out.println("solved");
             return true;
         }
         //check down
         else if(maze[posX+1][posY]==finish){
-            System.out.println("solved");
             return true;
         }
         //check left
         else if(maze[posX][posY-1]==finish){
-            System.out.println("solved");
             return true;
         }
         //check right
         else if(maze[posX][posY+1]==finish){
-            System.out.println("solved");
             return true;
         }
         else{
@@ -136,8 +124,6 @@ public class DFS {
         update(currentPosition);
         //push position onto stack
         addToStack();
-        //add to output sequence
-        addToOutput();
         //mark as visited
         visit(currentPosition);
     }
@@ -149,8 +135,6 @@ public class DFS {
         update(currentPosition);
         //push position onto stack
         addToStack();
-        //add to output sequence
-        addToOutput();
         //mark as visited
         visit(currentPosition);
     }
@@ -161,8 +145,6 @@ public class DFS {
         update(currentPosition);
         //push position onto stack
         addToStack();
-        //add to output sequence
-        addToOutput();
         //mark as visited
         visit(currentPosition);
     }
@@ -174,8 +156,6 @@ public class DFS {
         update(currentPosition);
         //push position onto stack
         addToStack();
-        //add to output sequence
-        addToOutput();
         //mark as visited
         visit(currentPosition);
     }
@@ -198,7 +178,11 @@ public class DFS {
     
     public void visit(Node currentPosition){
         visited[currentPosition.x][currentPosition.y] = true;
-        maze[currentPosition.x][currentPosition.y] = period;
+        if(maze[currentPosition.x][currentPosition.y] != "P".charAt(0)){
+            maze[currentPosition.x][currentPosition.y] = period;
+        }
+        //add to cost
+        cost++;
     }
     
     public void update(Node position){
@@ -207,7 +191,6 @@ public class DFS {
     }
     
     public void popFromStack(){
-        checkPosition();
         stackX.pop();
         stackY.pop();
         //change to that position
@@ -215,7 +198,8 @@ public class DFS {
         posY = stackY.peek();
         //change the current node
         update(currentPosition);
-        checkPosition();
+        //increment number of nodes expanded
+        nodes++;
     }
     
     public void addToStack(){
@@ -223,27 +207,24 @@ public class DFS {
         stackY.push(currentPosition.y);
     }
     
-    public void addToOutput(){
-        outputX.push(currentPosition.x);
-        outputY.push(currentPosition.y);
-    }
-    
-    public void printMaze(char[][] maze){
+    public void printSolution(char[][] maze){
         for(int i = 0; i < maze.length; i++){
             //make a string for the row
             String row = "";
             for(int j = 0; j < maze[0].length; j++){
-                char c=maze[i][j];    
-                row+=Character.toString(c);  
+                char c=maze[i][j];
+                //changes the dashes back to spaces
+                if(c==dash){
+                    row+=Character.toString(space);
+                }
+                else{
+                    row+=Character.toString(c);
+                }
             }
             //print out row
             System.out.println(row);
         }
-    }
-    
-    //for debugging
-    public void checkPosition(){
-        System.out.println("current position: (" + posX + ", " + posY + ")");
-        System.out.println("has character " + maze[posX][posY]);
+        System.out.println("Path cost: " + cost + " steps.");
+        System.out.println("Number of nodes expanded: " + nodes + " nodes.");
     }
 }
