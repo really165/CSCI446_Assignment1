@@ -15,6 +15,7 @@ public class DFS {
     char dash = "-".charAt(0);
     char period = ".".charAt(0);
     char finish = "*".charAt(0);
+    char start = "P".charAt(0);
     Node currentPosition;
     Stack<Integer> stackX = new Stack<>();
     Stack<Integer> stackY = new Stack<>();
@@ -55,22 +56,27 @@ public class DFS {
         //if position above is available
         if(checkUp()){
             moveUp();
+            cost++;
         }
         //if position below is available
         else if(checkDown()){
             moveDown();
+            cost++;
         }
         //if position left is available
         else if(checkLeft()){
             moveLeft();
+            cost++;
         }
         //if position right is available
         else if(checkRight()){
             moveRight();
+            cost++;
         }
         //else pop current position off stack
         else{
             popFromStack();
+            cost--;
             if(moveIsAvailable()){
                 move();
             }
@@ -181,8 +187,6 @@ public class DFS {
         if(maze[currentPosition.x][currentPosition.y] != "P".charAt(0)){
             maze[currentPosition.x][currentPosition.y] = period;
         }
-        //add to cost
-        cost++;
     }
     
     public void update(Node position){
@@ -198,15 +202,21 @@ public class DFS {
         posY = stackY.peek();
         //change the current node
         update(currentPosition);
-        //increment number of nodes expanded
-        nodes++;
     }
     
     public void addToStack(){
         stackX.push(currentPosition.x);
         stackY.push(currentPosition.y);
     }
-    
+    /*
+    public void cost(){
+        for(int i = 0; i < maze.length; i++){
+            for(int j = 0; j < maze[0].length; j++){
+                
+            }
+        }
+    }
+    */
     public void printSolution(char[][] maze){
         for(int i = 0; i < maze.length; i++){
             //make a string for the row
@@ -216,6 +226,10 @@ public class DFS {
                 //changes the dashes back to spaces
                 if(c==dash){
                     row+=Character.toString(space);
+                }
+                else if(c==start||c==finish||c==period){
+                    row+=Character.toString(c);
+                    nodes++;
                 }
                 else{
                     row+=Character.toString(c);
