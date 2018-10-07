@@ -20,14 +20,11 @@ public class Main {
                 char[][] maze = readFile(input);
                 printMaze(maze);
 
-                //DFS depthFirstSearch = new DFS(maze);
-                //depthFirstSearch.traverseMaze();
-
-                AStar searcher = new AStar();
-                char[][] result = searcher.search(maze);
+                AStar searcher = new AStar(maze);
+                searcher.traverseMaze();
 
                 System.out.println("Resulting path:");
-                printMaze(result);
+                printMaze(searcher.result);
 
                 System.out.printf("path cost: %d\n", searcher.pathCost);
                 System.out.printf("nodes expanded : %d\n", searcher.expanded);

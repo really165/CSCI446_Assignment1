@@ -3,19 +3,19 @@ package assignment1;
 import java.util.*;
 
 public class AStar {
-    Tile start = null;
-    Tile end = null;
+    private Tile[][] maze;
+    public char[][] result;
+    private Tile start = null;
+    private Tile end = null;
 
     public int expanded;
     public int pathCost;
 
-    public char[][] search(char[][] _maze) {
-        /* Step 0: initialize everything */
+    public AStar(char[][] _maze){
+        maze = new Tile[_maze.length][];
+        result = deepCopy(_maze);
 
-        Tile[][] maze = new Tile[_maze.length][];
-        char[][] result = deepCopy(_maze);
-
-        expanded = 0;
+        /* build up the maze and result objects */
 
         for (int r = 0; r < result.length; ++r) {
             maze[r] = new Tile[result[r].length];
@@ -38,28 +38,40 @@ public class AStar {
 
 
 
-        /* Step 1: find our start point and our end point */
+        /* find our start point and our end point */
 
         for (int r = 0; r < maze.length; ++r) {
             for (int c = 0; c < maze[r].length; ++c) {
                 char symbol = maze[r][c].symbol;
 
                 if (symbol == Tile.START) {
-                    assert start == null;
+                    if (start != null) {
+                        throw new IllegalStateException("Start already found");
+                    }
+
                     start = maze[r][c];
                 }
                 else if (symbol == Tile.END) {
-                    assert end == null;
+                    if (end != null) {
+                        throw new IllegalStateException("Start already found");
+                    }
+
                     end = maze[r][c];
                 }
             }
         }
 
-        assert start != null && end != null;
+        if (start == null) {
+            throw new IllegalStateException("Start not found");
+        }
 
+        if (end == null) {
+            throw new IllegalStateException("Start not found");
+        }
+    }
 
-
-        /* Step 2: run the algorithm */
+    public void traverseMaze() throws IllegalStateException {
+        expanded = 0;
 
         PriorityQueue<Tile> queue = new PriorityQueue<>(new Comparator<Tile>() {
             public int compare(Tile a, Tile b) {
@@ -115,15 +127,16 @@ public class AStar {
             }
         }
 
-        /* Step 3: profit */
+
+
+        /* build up the result */
+
         pathCost = end.cost;
         for (Tile path = end; path != null; path = path.prev) {
             if (result[path.r][path.c] == Tile.SPACE) {
                 result[path.r][path.c] = Tile.PATH;
             }
         }
-
-        return result;
     }
 
     public char[][] deepCopy(char[][] original) {
