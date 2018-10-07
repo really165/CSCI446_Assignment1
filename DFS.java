@@ -44,6 +44,7 @@ public class DFS {
         visit(currentPosition);
     }
     
+    //the main method called to traverse the maze
     public void traverseMaze(){
         while(!solved()){
             move();
@@ -51,6 +52,8 @@ public class DFS {
         printSolution(maze);
     }
     
+    //checks each direction and moves the current position to it if one is found
+    //otherwise backtracks
     public void move(){
         //determine what to do next
         //if position above is available
@@ -76,13 +79,12 @@ public class DFS {
         //else pop current position off stack
         else{
             popFromStack();
+            //decrement the cost if backtracking
             cost--;
-            if(moveIsAvailable()){
-                move();
-            }
         }
     }
     
+    //checks if there is a possible move
     public boolean moveIsAvailable(){
         if(checkUp()){
             return true;
@@ -101,6 +103,7 @@ public class DFS {
         }
     }
     
+    //goal test
     public boolean solved(){
         //check up
         if(maze[posX-1][posY]==finish){
@@ -166,22 +169,22 @@ public class DFS {
         visit(currentPosition);
     }
     
+    //check if surrounding nodes are visited
+    //make sure the character is a dash
     public boolean checkUp(){
         return (!visited[posX-1][posY])&&(maze[posX-1][posY]==dash);
     }
-    
     public boolean checkDown(){
         return (!visited[posX+1][posY])&&(maze[posX+1][posY]==dash);
     }
-    
     public boolean checkLeft(){
         return (!visited[posX][posY-1])&&(maze[posX][posY-1]==dash);
     }
-    
     public boolean checkRight(){
         return (!visited[posX][posY+1])&&(maze[posX][posY+1]==dash);
     }
     
+    //mark current position as visited and change it's character to a period
     public void visit(Node currentPosition){
         visited[currentPosition.x][currentPosition.y] = true;
         if(maze[currentPosition.x][currentPosition.y] != "P".charAt(0)){
@@ -189,11 +192,13 @@ public class DFS {
         }
     }
     
+    //update the position object with new coordinates
     public void update(Node position){
         position.x = posX;
         position.y = posY;
     }
     
+    //pop a position from the stack
     public void popFromStack(){
         stackX.pop();
         stackY.pop();
@@ -204,19 +209,13 @@ public class DFS {
         update(currentPosition);
     }
     
+    //add a position to the stack
     public void addToStack(){
         stackX.push(currentPosition.x);
         stackY.push(currentPosition.y);
     }
-    /*
-    public void cost(){
-        for(int i = 0; i < maze.length; i++){
-            for(int j = 0; j < maze[0].length; j++){
-                
-            }
-        }
-    }
-    */
+    
+    //print the final maze
     public void printSolution(char[][] maze){
         for(int i = 0; i < maze.length; i++){
             //make a string for the row
