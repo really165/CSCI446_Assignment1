@@ -52,10 +52,18 @@ public class AStar {
         assert start != null && end != null;
 
         /* Step 2: run the algorithm */
-        PriorityQueue<Tile> queue = new PriorityQueue<>();
-        queue.offer(start);
+        Comparator<Tile> ordering = new Comparator<Tile>() {
+            public int compare(Tile a, Tile b) {
+                return Integer.compare(a.dist(end) + a.cost, b.dist(end) + b.cost);
+            }
+        };
 
-        while (queue.peek() != null) {
+        //PriorityQueue<Tile> queue = new PriorityQueue<>(ordering);
+        LinkedList<Tile> queue = new LinkedList<>();
+        queue.offer(start);
+        queue.add(start);
+
+        while (!queue.isEmpty()) {
             ++expanded;
             Tile tile = queue.poll();
 
@@ -87,18 +95,40 @@ public class AStar {
                             default:
                                 /* Do spread into these */
                                 maze[candidate.r][candidate.c] = Tile.FRONTER;
+
+                                Tile oldCandidate = candidate;
+                                for (Tile other : queue) {
+                                    if (candidate.r == other.r && candidate.c == other.c) {
+                                        if (candidate.compareTo(other) > 0) {
+                                            candidate = other;
+                                        }
+                                    }
+                                }
+
+                                while (queue.remove(candidate));
+
+                                assert !queue.contains(candidate);
+
                                 queue.offer(candidate);
+                                queue.sort(ordering);
                                 break;
                         }
                     }
+                }
+
+                try {
+                    while (System.in.read() != (int)'\n');
+                    Main.printMaze(maze);
+                }
+                catch (Exception e) {
                 }
             }
         }
         /* NOTE: what happens if we find don't break from this loop? */
 
         /* Step 3: profit */
+        pathCost = end.cost;
         for (Tile path = end; path != null; path = path.prev) {
-            ++pathCost;
             if (result[path.r][path.c] == Tile.SPACE) {
                 result[path.r][path.c] = Tile.PATH;
             }
@@ -120,7 +150,7 @@ public class AStar {
         return result;
     }
 
-    private class Tile implements Comparable<Tile> {
+    private static class Tile implements Comparable<Tile> {
         public final int r;
         public final int c;
         public final Tile prev;
@@ -150,12 +180,37 @@ public class AStar {
             this.cost = prev.cost + 1;
         }
 
-        public int dist() {
-            return Math.abs(this.r - end.r) + Math.abs(this.c - end.c);
+        public int dist(Tile that) {
+            return Math.abs(this.r - that.r) + Math.abs(this.c - that.c);
         }
 
         public int compareTo(Tile that) {
-            return Integer.compare(this.dist() + this.cost, that.dist() + that.cost);
+            if (this.r != that.r) {
+                return Integer.compare(this.r, that.r);
+            }
+            else {
+                return Integer.compare(this.c, that.c);
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            /* TODO: better hash function! */
+            return 19*this.r + 23*this.c;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            boolean result = false;
+
+            if (obj != null && Tile.class.isAssignableFrom(obj.getClass())) {
+                final Tile that = (Tile) obj;
+
+                result = (this.r == that.r && this.c == that.c);
+            }
+
+            return result;
+
         }
 
         public void print() {
