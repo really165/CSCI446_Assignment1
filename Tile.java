@@ -7,13 +7,23 @@ class Tile implements Comparable<Tile> {
     public Tile prev;
     public int cost;
 
-    static final char WALL     = '█';
-    static final char FRONTER  = '▒';
-    static final char SEARCHED = '░';
+    /* pretty stuff */
+    //static final char WALL     = '█';
+    //static final char FRONTER  = '▒';
+    //static final char SEARCHED = '░';
+    //static final char SPACE    = ' ';
+    //static final char START    = 'P';
+    //static final char END      = '*';
+    //static final char PATH     = '⋅';
+
+    /* uggly stuff */
+    static final char WALL     = '%';
+    static final char FRONTER  = 'X';
+    static final char SEARCHED = 'x';
     static final char SPACE    = ' ';
     static final char START    = 'P';
     static final char END      = '*';
-    static final char PATH     = '⋅';
+    static final char PATH     = '.';
 
     public Tile(int r, int c, char symbol) {
         this.r = r;

@@ -2,7 +2,7 @@ package assignment1;
 
 import java.util.*;
 
-public class AStar {
+public class AStar implements Searcher {
     private Tile[][] maze;
     public char[][] result;
     private Tile start = null;
@@ -151,6 +151,11 @@ public class AStar {
                 result[path.r][path.c] = Tile.PATH;
             }
         }
+
+        Main.printMaze(result);
+
+        System.out.printf("Cost = %d\n", this.pathCost);
+        System.out.printf("Nodes Expanded = %d\n", this.expanded);
     }
 
     public char[][] deepCopy(char[][] original) {

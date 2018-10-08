@@ -3,10 +3,7 @@ package assignment1;
 import java.util.Random;
 import java.util.Stack;
 
-import com.sun.javafx.scene.traversal.TopMostTraversalEngine;
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.TopLevelAttribute;
-
-public class GFS {
+public class GFS implements Searcher {
     char[][] maze;
     boolean[][] visited;
     int posX;

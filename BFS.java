@@ -2,7 +2,7 @@ package assignment1;
 
 import java.util.*;
 
-public class BFS {
+public class BFS implements Searcher {
     private Tile[][] maze;
     public char[][] result;
     private Tile start = null;
@@ -147,6 +147,11 @@ public class BFS {
                 result[path.r][path.c] = Tile.PATH;
             }
         }
+
+        Main.printMaze(result);
+
+        System.out.printf("Cost = %d\n", this.pathCost);
+        System.out.printf("Nodes Expanded = %d\n", this.expanded);
     }
 
     public char[][] deepCopy(char[][] original) {

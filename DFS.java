@@ -2,7 +2,7 @@ package assignment1;
 
 import java.util.Stack;
 
-public class DFS {
+public class DFS implements Searcher {
     
     char[][] maze;
     //keeps track of which nodes are visited

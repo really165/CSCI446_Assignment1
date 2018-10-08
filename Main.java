@@ -6,36 +6,50 @@ import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
-        if (args.length == 1) {
+        if (args.length == 2) {
             try {
                 InputStream input;
 
-                if (args[0].equals("-")) {
+                if (args[1].equals("-")) {
                     input = System.in;
                 }
                 else {
-                    input = new FileInputStream(args[0]);
+                    input = new FileInputStream(args[1]);
                 }
 
                 char[][] maze = readFile(input);
                 printMaze(maze);
 
-                //AStar searcher = new AStar(maze);
-                BFS searcher = new BFS(maze);
+                Searcher searcher;
+                switch (args[0]) {
+                    case "dfs":
+                        searcher = new DFS(maze);
+                        break;
+
+                    case "greedy":
+                        searcher = new GFS(maze);
+                        break;
+
+                    case "astar":
+                    case "a*":
+                        searcher = new AStar(maze);
+                        break;
+                    case "bfs":
+                        searcher = new BFS(maze);
+                        break;
+
+                    default:
+                        throw new IllegalArgumentException("Must be dfs/bfs/greedy/astar");
+                }
+
                 searcher.traverseMaze();
-
-                System.out.println("Resulting path:");
-                printMaze(searcher.result);
-
-                System.out.printf("path cost: %d\n", searcher.pathCost);
-                System.out.printf("nodes expanded : %d\n", searcher.expanded);
             }
             catch (FileNotFoundException e) {
                 System.err.println("File not found");
             }
         }
         else {
-            System.err.println("Usage: java assignment1.Main MAZE_FILE");
+            System.err.println("Usage: java assignment1.Main METHOD MAZE_FILE");
         }
     }
 
