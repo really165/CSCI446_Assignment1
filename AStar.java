@@ -2,7 +2,7 @@ package assignment1;
 
 import java.util.*;
 
-public class BFS {
+public class AStar {
     private Tile[][] maze;
     public char[][] result;
     private Tile start = null;
@@ -11,7 +11,7 @@ public class BFS {
     public int expanded;
     public int pathCost;
 
-    public BFS(char[][] _maze){
+    public AStar(char[][] _maze){
         maze = new Tile[_maze.length][];
         result = deepCopy(_maze);
 
@@ -73,7 +73,11 @@ public class BFS {
     public void traverseMaze() throws IllegalStateException {
         expanded = 0;
 
-        LinkedList<Tile> queue = new LinkedList<>();
+        PriorityQueue<Tile> queue = new PriorityQueue<>(new Comparator<Tile>() {
+            public int compare(Tile a, Tile b) {
+                return Integer.compare(a.dist(end) + a.cost, b.dist(end) + b.cost);
+            }
+        });
         start.cost = 0;
         queue.offer(start);
 
